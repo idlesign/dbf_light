@@ -27,10 +27,9 @@ Description
 
 No fancy stuff, just DBF reading for most common format versions.
 
-* Python 2.7, 3.4+
-* Uses `namedtuple` for row representation
-* Uses iterative row reading
-* Works fine with cyrillic
+* Python 2.7, 3.4+;
+* Uses `namedtuple` for row representation and iterative row reading to minimize memory usage;
+* Works fine with cyrillic (supports KLADR and CBRF databases).
 
 
 API
