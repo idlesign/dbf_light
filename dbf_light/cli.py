@@ -16,14 +16,27 @@ def entry_point():
 @entry_point.command()
 @arg_db
 @opt_encoding
-def show(dbfile, encoding):
+@click.option('--no-limit', help='Do not limit number of rows to output.', is_flag=True)
+def show(dbfile, encoding, no_limit):
     """Show .dbf file contents (rows)."""
 
+    limit = 15
+
+    if no_limit:
+        limit = float('inf')
+
     with Dbf.open(dbfile, encoding=encoding) as dbf:
-        for row in dbf:
+
+        for idx, row in enumerate(dbf, 1):
             click.secho('')
+
             for key, val in row._asdict().items():
-                click.secho('    %s: %s' % (key, val))
+                click.secho('  %s: %s' % (key, val))
+
+            if idx == limit:
+                click.secho(
+                    'Note: Output is limited to %s rows. Use --no-limit option to bypass.' % limit, fg='red')
+                break
 
 
 @entry_point.command()
@@ -35,7 +48,7 @@ def describe(dbfile):
         click.secho('Rows count: %s' % (dbf.prolog.records_count))
         click.secho('Fields:')
         for field in dbf.fields:
-            click.secho('    %s: %s' % (field.type, field))
+            click.secho('  %s: %s' % (field.type, field))
 
 
 def main():
