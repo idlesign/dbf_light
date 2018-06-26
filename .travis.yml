@@ -1,0 +1,18 @@
+language: python
+
+sudo: false
+
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
+
+install:
+  - pip install pytest coverage coveralls
+
+script:
+  - coverage run --source=dbf_light setup.py test
+
+after_success:
+  - coveralls

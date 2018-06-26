@@ -1,0 +1,6 @@
+strictness: medium
+
+autodetect: yes
+
+ignore-paths:
+    - tests
