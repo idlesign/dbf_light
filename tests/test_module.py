@@ -7,7 +7,7 @@ from contextlib import contextmanager
 
 import pytest
 
-from dbf_light import Dbf
+from dbf_light import Dbf, open_db
 
 try:
     sting_types = basestring
@@ -16,9 +16,12 @@ except NameError:
 
 
 @pytest.fixture
-def read_db(request):
+def dir_fixtures(request):
+    return path.join(path.dirname(path.abspath(request.module.__file__)), 'fixtures')
 
-    dir_fixtures = path.join(path.dirname(path.abspath(request.module.__file__)), 'fixtures')
+
+@pytest.fixture
+def read_db(dir_fixtures):
 
     @contextmanager
     def read_db_(name):
@@ -68,3 +71,22 @@ def test_cyrillic(read_db):
             assert row.name_srus == '"СИБСОЦБАНК" ООО'
             break
 
+
+def test_archive(dir_fixtures):
+
+    with Dbf.open_zip('bik_swif.dbf', path.join(dir_fixtures, 'bik_swift-bik.zip')) as dbf:
+
+        assert dbf.prolog.records_count == 369
+
+        for row in dbf:
+            assert row.name_srus == '"СИБСОЦБАНК" ООО'
+            break
+
+
+def test_open_db(dir_fixtures):
+
+    with open_db('bik_swif.dbf', path.join(dir_fixtures, 'bik_swift-bik.zip')) as dbf:
+        assert dbf.prolog.records_count == 369
+
+    with open_db( path.join(dir_fixtures, 'bik_swif.dbf')) as dbf:
+        assert dbf.prolog.records_count == 369

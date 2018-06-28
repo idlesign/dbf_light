@@ -29,7 +29,8 @@ No fancy stuff, just DBF reading for most common format versions.
 
 * Python 2.7, 3.4+;
 * Uses `namedtuple` for row representation and iterative row reading to minimize memory usage;
-* Works fine with cyrillic (supports KLADR and CBRF databases).
+* Works fine with cyrillic (supports KLADR and CBRF databases);
+* Reads .dbf from zip files.
 
 
 API
@@ -45,10 +46,15 @@ API
         for field in dbf.field:
             print('Field: %s' % field)
 
-        print('Rows:')
+        print('Rows (%s):' % dbf.prolog.records_count)
 
         for row in dbf:
             print(row)
+
+    # Read from zip:
+    with Dbf.open_zip('some.dbf', 'here/myarch.zip') as dbf:
+        ...
+
 
 CLI
 ---

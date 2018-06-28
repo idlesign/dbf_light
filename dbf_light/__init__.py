@@ -1,4 +1,4 @@
-from .light import Dbf
+from .light import Dbf, open_db
 
 
 VERSION = (0, 1, 0)

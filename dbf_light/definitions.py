@@ -65,7 +65,6 @@ class Prolog(Definition):
     cls_field = Field
 
     _definition = (
-        ('signature', 'B'),
         ('y', 'c'),
         ('m', 'c'),
         ('d', 'c'),
@@ -88,12 +87,12 @@ class Prolog(Definition):
 
         self.records_count = data['records']
 
-        count = (data['len_head'] - (self._struct_size+1)) / self.cls_field._struct_size
+        # +2 -> 1 byte for signature + 1 step
+        count = (data['len_head'] - (self._struct_size+2)) / self.cls_field._struct_size
 
         assert count.is_integer(), 'Unexpected records count. It seems that file format is misinterpreted.'
 
         self.fields_count = int(count)
-        self.signature = data['signature']
 
     @property
     def encoding(self):
@@ -164,14 +163,13 @@ def get_format_description(fileobj):
     251	0xFB	11111011	FoxBASE	Таблица с memo-полями .???
 
     :param fileobj:
-    :rtype: Prolog
+    :rtype: tuple(Prolog, bytes)
 
     """
     signature = struct.unpack('<B', fileobj.read(1))[0]
-    fileobj.seek(0)
 
     if signature in {48, 49}:  # pragma: nocover
         # todo return PrologFoxpro when it's debugged (records count error exists).
         raise NotImplementedError('FoxPro dbf support is not implemented.')
 
-    return Prolog
+    return Prolog, signature

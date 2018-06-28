@@ -5,6 +5,7 @@ import struct
 from collections import namedtuple
 from contextlib import contextmanager
 from functools import partial
+from zipfile import ZipFile
 
 from .definitions import get_format_description, Field
 from .exceptions import DbfException
@@ -26,7 +27,7 @@ class Dbf(object):
         self._fileobj = fileobj
         self._lower = fieldnames_lower
 
-        cls_prolog = get_format_description(fileobj)
+        cls_prolog, self.signature = get_format_description(fileobj)
 
         self.cls_prolog = cls_prolog
         self.cls_field = cls_prolog.cls_field
@@ -46,7 +47,7 @@ class Dbf(object):
 
     @classmethod
     @contextmanager
-    def open(cls, what, encoding=None, fieldnames_lower=True):
+    def open(cls, dbfile, encoding=None, fieldnames_lower=True):
         """Context manager. Allows opening a .dbf file.
 
         .. code-block::
@@ -54,9 +55,7 @@ class Dbf(object):
             with Dbf.open('some.dbf') as dbf:
                 ...
 
-        :param str|unicode|file what: .dbf filepath or a file-like object.
-
-        :param encoding:
+        :param str|unicode|file dbfile: .dbf filepath or a file-like object.
 
         :param str|unicode encoding: Encoding used by DB.
             This will be used if there's no encoding information in the DB itself.
@@ -65,8 +64,33 @@ class Dbf(object):
 
         :rtype: Dbf
         """
-        with open(what, 'rb') as f:
+        with open(dbfile, 'rb') as f:
             yield cls(f, encoding=encoding, fieldnames_lower=fieldnames_lower)
+
+    @classmethod
+    @contextmanager
+    def open_zip(cls, dbname, zipped, encoding=None, fieldnames_lower=True):
+        """Context manager. Allows opening a .dbf file from zip archive.
+
+        .. code-block::
+
+            with Dbf.open_zip('some.dbf', 'myarch.zip') as dbf:
+                ...
+
+        :param str|unicode dbname: .dbf file name
+
+        :param str|unicode|file zipped: .zip file path or a file-like object.
+
+        :param str|unicode encoding: Encoding used by DB.
+            This will be used if there's no encoding information in the DB itself.
+
+        :param bool fieldnames_lower: Lowercase field names.
+
+        :rtype: Dbf
+        """
+        with ZipFile(zipped, 'r') as zip_:
+            with zip_.open(dbname) as f:
+                yield cls(f, encoding=encoding, fieldnames_lower=fieldnames_lower)
 
     def iter_rows(self):
         """Generator reading .dbf row one by one.
@@ -118,8 +142,37 @@ class Dbf(object):
         if terminator != b'\r':
             raise DbfException(
                 'Header termination byte not found. '
-                'Seems to be an unsupported format. Signature: %s' % self.prolog.signature)
+                'Seems to be an unsupported format. Signature: %s' % self.signature)
 
         cls_row = namedtuple('Row', field_names)
 
         return fields, cls_row
+
+
+@contextmanager
+def open_db(db, zipped=None, encoding=None, fieldnames_lower=True):
+    """Context manager. Allows reading DBF file (maybe even from zip).
+
+    :param str|unicode|file db: .dbf file name or a file-like object.
+
+    :param str|unicode zipped: .zip file path or a file-like object.
+
+    :param str|unicode encoding: Encoding used by DB.
+        This will be used if there's no encoding information in the DB itself.
+
+    :param bool fieldnames_lower: Lowercase field names.
+
+    :rtype: Dbf
+    """
+    kwargs = dict(
+        encoding=encoding,
+        fieldnames_lower=fieldnames_lower,
+    )
+
+    if zipped:
+        with Dbf.open_zip(db, zipped, **kwargs) as dbf:
+            yield dbf
+
+    else:
+        with Dbf.open(db, **kwargs) as dbf:
+            yield dbf

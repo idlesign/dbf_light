@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 import click
 
-from dbf_light import VERSION_STR, Dbf
+from dbf_light import VERSION_STR, Dbf, open_db
 
-arg_db = click.argument('dbfile', type=click.Path(exists=True, dir_okay=False))
+arg_db = click.argument('db', type=click.Path(dir_okay=False))
 opt_encoding = click.option('--encoding', help='Encoding used by DB')
+opt_zipped = click.option(
+    '--zip', help='Zip filename containing DBF', type=click.Path(exists=True, dir_okay=False))
 
 
 @click.group()
@@ -17,7 +19,8 @@ def entry_point():
 @arg_db
 @opt_encoding
 @click.option('--no-limit', help='Do not limit number of rows to output.', is_flag=True)
-def show(dbfile, encoding, no_limit):
+@opt_zipped
+def show(db, encoding, no_limit, zip):
     """Show .dbf file contents (rows)."""
 
     limit = 15
@@ -25,8 +28,7 @@ def show(dbfile, encoding, no_limit):
     if no_limit:
         limit = float('inf')
 
-    with Dbf.open(dbfile, encoding=encoding) as dbf:
-
+    with open_db(db, zip, encoding=encoding) as dbf:
         for idx, row in enumerate(dbf, 1):
             click.secho('')
 
@@ -41,10 +43,11 @@ def show(dbfile, encoding, no_limit):
 
 @entry_point.command()
 @arg_db
-def describe(dbfile):
+@opt_zipped
+def describe(db, zip):
     """Show .dbf file statistics."""
 
-    with Dbf.open(dbfile) as dbf:
+    with open_db(db, zip) as dbf:
         click.secho('Rows count: %s' % (dbf.prolog.records_count))
         click.secho('Fields:')
         for field in dbf.fields:

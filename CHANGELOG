@@ -2,6 +2,11 @@ dbf_light changelog
 ===================
 
 
+Unreleased
+----------
++ Implemented zipped db support.
+
+
 v0.1.0
 ------
 + Basic functionality.
