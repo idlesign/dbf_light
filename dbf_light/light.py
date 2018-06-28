@@ -46,7 +46,7 @@ class Dbf(object):
 
     @classmethod
     @contextmanager
-    def open(cls, filepath, encoding=None, fieldnames_lower=True):
+    def open(cls, what, encoding=None, fieldnames_lower=True):
         """Context manager. Allows opening a .dbf file.
 
         .. code-block::
@@ -54,7 +54,7 @@ class Dbf(object):
             with Dbf.open('some.dbf') as dbf:
                 ...
 
-        :param str|unicode filepath: .dbf filepath
+        :param str|unicode|file what: .dbf filepath or a file-like object.
 
         :param encoding:
 
@@ -65,7 +65,7 @@ class Dbf(object):
 
         :rtype: Dbf
         """
-        with open(filepath, 'rb') as f:
+        with open(what, 'rb') as f:
             yield cls(f, encoding=encoding, fieldnames_lower=fieldnames_lower)
 
     def iter_rows(self):
