@@ -51,8 +51,8 @@ API
         for row in dbf:
             print(row)
 
-    # Read from zip:
-    with Dbf.open_zip('some.dbf', 'here/myarch.zip') as dbf:
+    # Read `some.dbf` from zip (ignoring filename case):
+    with Dbf.open_zip('some.dbf', 'here/myarch.zip', case_sensitive=False) as dbf:
         ...
 
 
