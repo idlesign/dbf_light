@@ -2,6 +2,11 @@ dbf_light changelog
 ===================
 
 
+Unreleased
+----------
++ Added 'case_sensitive' argument support for open* commands.
+
+
 v0.2.0
 ------
 + Implemented zipped db support.

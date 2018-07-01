@@ -7,6 +7,8 @@ arg_db = click.argument('db', type=click.Path(dir_okay=False))
 opt_encoding = click.option('--encoding', help='Encoding used by DB')
 opt_zipped = click.option(
     '--zip', help='Zip filename containing DBF', type=click.Path(exists=True, dir_okay=False))
+opt_nocase = click.option(
+    '-i', '--case-insensitive', help='Do not honor DB filename case', is_flag=True)
 
 
 @click.group()
@@ -20,7 +22,8 @@ def entry_point():
 @opt_encoding
 @click.option('--no-limit', help='Do not limit number of rows to output.', is_flag=True)
 @opt_zipped
-def show(db, encoding, no_limit, zip):
+@opt_nocase
+def show(db, encoding, no_limit, zip, case_insensitive):
     """Show .dbf file contents (rows)."""
 
     limit = 15
@@ -28,7 +31,7 @@ def show(db, encoding, no_limit, zip):
     if no_limit:
         limit = float('inf')
 
-    with open_db(db, zip, encoding=encoding) as dbf:
+    with open_db(db, zip, encoding=encoding, case_sensitive=not case_insensitive) as dbf:
         for idx, row in enumerate(dbf, 1):
             click.secho('')
 
@@ -44,10 +47,11 @@ def show(db, encoding, no_limit, zip):
 @entry_point.command()
 @arg_db
 @opt_zipped
-def describe(db, zip):
+@opt_nocase
+def describe(db, zip, case_insensitive):
     """Show .dbf file statistics."""
 
-    with open_db(db, zip) as dbf:
+    with open_db(db, zip, case_sensitive=not case_insensitive) as dbf:
         click.secho('Rows count: %s' % (dbf.prolog.records_count))
         click.secho('Fields:')
         for field in dbf.fields:

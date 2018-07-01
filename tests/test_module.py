@@ -74,7 +74,7 @@ def test_cyrillic(read_db):
 
 def test_archive(dir_fixtures):
 
-    with Dbf.open_zip('bik_swif.dbf', path.join(dir_fixtures, 'bik_swift-bik.zip')) as dbf:
+    with Dbf.open_zip('bik_swif.dbf', path.join(dir_fixtures, 'bik_swift-bik.zip'), case_sensitive=False) as dbf:
 
         assert dbf.prolog.records_count == 369
 
@@ -85,8 +85,8 @@ def test_archive(dir_fixtures):
 
 def test_open_db(dir_fixtures):
 
-    with open_db('bik_swif.dbf', path.join(dir_fixtures, 'bik_swift-bik.zip')) as dbf:
+    with open_db('bik_swif.dbf', path.join(dir_fixtures, 'bik_swift-bik.zip'), case_sensitive=False) as dbf:
         assert dbf.prolog.records_count == 369
 
-    with open_db( path.join(dir_fixtures, 'bik_swif.dbf')) as dbf:
+    with open_db( path.join(dir_fixtures, 'bik_swif.dbf'), case_sensitive=False) as dbf:
         assert dbf.prolog.records_count == 369

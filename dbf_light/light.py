@@ -2,11 +2,13 @@
 from __future__ import unicode_literals
 
 import struct
+from os import path, listdir
 from collections import namedtuple
 from contextlib import contextmanager
 from functools import partial
 from zipfile import ZipFile
 
+from .utils import string_types, pick_name
 from .definitions import get_format_description, Field
 from .exceptions import DbfException
 
@@ -47,7 +49,7 @@ class Dbf(object):
 
     @classmethod
     @contextmanager
-    def open(cls, dbfile, encoding=None, fieldnames_lower=True):
+    def open(cls, dbfile, encoding=None, fieldnames_lower=True, case_sensitive=True):
         """Context manager. Allows opening a .dbf file.
 
         .. code-block::
@@ -62,14 +64,20 @@ class Dbf(object):
 
         :param bool fieldnames_lower: Lowercase field names.
 
+        :param bool case_sensitive: Whether DB filename is case sensitive.
+
         :rtype: Dbf
         """
+        if not case_sensitive:
+            if isinstance(dbfile, string_types):
+                dbfile = pick_name(dbfile, listdir(path.dirname(dbfile)))
+
         with open(dbfile, 'rb') as f:
             yield cls(f, encoding=encoding, fieldnames_lower=fieldnames_lower)
 
     @classmethod
     @contextmanager
-    def open_zip(cls, dbname, zipped, encoding=None, fieldnames_lower=True):
+    def open_zip(cls, dbname, zipped, encoding=None, fieldnames_lower=True, case_sensitive=True):
         """Context manager. Allows opening a .dbf file from zip archive.
 
         .. code-block::
@@ -86,9 +94,15 @@ class Dbf(object):
 
         :param bool fieldnames_lower: Lowercase field names.
 
+        :param bool case_sensitive: Whether DB filename is case sensitive.
+
         :rtype: Dbf
         """
         with ZipFile(zipped, 'r') as zip_:
+
+            if not case_sensitive:
+                dbname = pick_name(dbname, zip_.namelist())
+
             with zip_.open(dbname) as f:
                 yield cls(f, encoding=encoding, fieldnames_lower=fieldnames_lower)
 
@@ -150,7 +164,7 @@ class Dbf(object):
 
 
 @contextmanager
-def open_db(db, zipped=None, encoding=None, fieldnames_lower=True):
+def open_db(db, zipped=None, encoding=None, fieldnames_lower=True, case_sensitive=True):
     """Context manager. Allows reading DBF file (maybe even from zip).
 
     :param str|unicode|file db: .dbf file name or a file-like object.
@@ -162,11 +176,14 @@ def open_db(db, zipped=None, encoding=None, fieldnames_lower=True):
 
     :param bool fieldnames_lower: Lowercase field names.
 
+    :param bool case_sensitive: Whether DB filename is case sensitive.
+
     :rtype: Dbf
     """
     kwargs = dict(
         encoding=encoding,
         fieldnames_lower=fieldnames_lower,
+        case_sensitive=case_sensitive,
     )
 
     if zipped:
