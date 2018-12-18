@@ -43,7 +43,7 @@ API
 
     with Dbf.open('some.dbf') as dbf:
 
-        for field in dbf.field:
+        for field in dbf.fields:
             print('Field: %s' % field)
 
         print('Rows (%s):' % dbf.prolog.records_count)
