@@ -2,6 +2,11 @@ dbf_light changelog
 ===================
 
 
+Unreleased
+----------
+! Dropped QA for Python 3.4.
+
+
 v0.3.0
 ------
 + Added 'case_sensitive' argument support for open* commands.
