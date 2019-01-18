@@ -2,6 +2,12 @@ dbf_light
 =========
 https://github.com/idlesign/dbf_light
 
+.. image:: https://idlesign.github.io/lbc/py2-lbc.svg
+   :target: https://idlesign.github.io/lbc/
+   :alt: LBC Python 2
+
+----
+
 |release| |lic| |ci| |coverage| |health|
 
 .. |release| image:: https://img.shields.io/pypi/v/dbf_light.svg
