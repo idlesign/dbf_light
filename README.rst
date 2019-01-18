@@ -33,7 +33,7 @@ Description
 
 No fancy stuff, just DBF reading for most common format versions.
 
-* Python 2.7, 3.4+;
+* Python 2.7, 3.5+;
 * Uses `namedtuple` for row representation and iterative row reading to minimize memory usage;
 * Works fine with cyrillic (supports KLADR and CBRF databases);
 * Reads .dbf from zip files.
