@@ -54,7 +54,7 @@ setup(
 
     classifiers=[
         # As in https://pypi.python.org/pypi?:action=list_classifiers
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
@@ -63,6 +63,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'License :: OSI Approved :: BSD License'
     ],
 )
