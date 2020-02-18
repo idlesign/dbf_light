@@ -8,7 +8,7 @@ https://github.com/idlesign/dbf_light
 
 ----
 
-|release| |lic| |ci| |coverage| |health|
+|release| |lic| |ci| |coverage|
 
 .. |release| image:: https://img.shields.io/pypi/v/dbf_light.svg
     :target: https://pypi.python.org/pypi/dbf_light
@@ -22,8 +22,6 @@ https://github.com/idlesign/dbf_light
 .. |coverage| image:: https://img.shields.io/coveralls/idlesign/dbf_light/master.svg
     :target: https://coveralls.io/r/idlesign/dbf_light
 
-.. |health| image:: https://landscape.io/github/idlesign/dbf_light/master/landscape.svg?style=flat
-    :target: https://landscape.io/github/idlesign/dbf_light/master
 
 
 Description
