@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 import click
 
-from dbf_light import VERSION_STR, Dbf, open_db
+from dbf_light import VERSION, open_db
 
 arg_db = click.argument('db', type=click.Path(dir_okay=False))
 opt_encoding = click.option('--encoding', help='Encoding used by DB')
@@ -12,7 +11,7 @@ opt_nocase = click.option(
 
 
 @click.group()
-@click.version_option(version=VERSION_STR)
+@click.version_option(version=VERSION)
 def entry_point():
     """dbf_light command line utilities."""
 
@@ -36,11 +35,11 @@ def show(db, encoding, no_limit, zip, case_insensitive):
             click.secho('')
 
             for key, val in row._asdict().items():
-                click.secho('  %s: %s' % (key, val))
+                click.secho(f'  {key}: {val}')
 
             if idx == limit:
                 click.secho(
-                    'Note: Output is limited to %s rows. Use --no-limit option to bypass.' % limit, fg='red')
+                    f'Note: Output is limited to {limit} rows. Use --no-limit option to bypass.', fg='red')
                 break
 
 
@@ -52,10 +51,10 @@ def describe(db, zip, case_insensitive):
     """Show .dbf file statistics."""
 
     with open_db(db, zip, case_sensitive=not case_insensitive) as dbf:
-        click.secho('Rows count: %s' % (dbf.prolog.records_count))
+        click.secho(f'Rows count: {dbf.prolog.records_count}')
         click.secho('Fields:')
         for field in dbf.fields:
-            click.secho('  %s: %s' % (field.type, field))
+            click.secho(f'  {field.type}: {field}')
 
 
 def main():

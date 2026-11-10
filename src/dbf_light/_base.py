@@ -1,12 +1,10 @@
-# -*- encoding: utf-8 -*-
-from __future__ import unicode_literals
 
 import struct
 
 
-class Definition(object):
+class Definition:
 
-    _definition = tuple()
+    _definition = ()
     _struct_rule = ''
     _struct_size = None
     _names = []
@@ -31,7 +29,7 @@ class Definition(object):
     @classmethod
     def _unpack(cls, raw):
         unpacked = struct.unpack(cls._struct_rule, raw)
-        return dict(zip(cls._names, unpacked))
+        return dict(zip(cls._names, unpacked, strict=False))
 
     @classmethod
     def from_file(cls, fileobj):

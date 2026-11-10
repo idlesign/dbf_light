@@ -1,6 +1,4 @@
-# -*- encoding: utf-8 -*-
-from __future__ import unicode_literals
-from os import path
+from pathlib import Path
 from decimal import Decimal
 
 from contextlib import contextmanager
@@ -17,7 +15,7 @@ except NameError:
 
 @pytest.fixture
 def dir_fixtures(request):
-    return path.join(path.dirname(path.abspath(request.module.__file__)), 'fixtures')
+    return Path(request.module.__file__).resolve().parent / 'fixtures'
 
 
 @pytest.fixture
@@ -25,7 +23,7 @@ def read_db(dir_fixtures):
 
     @contextmanager
     def read_db_(name):
-        with Dbf.open(path.join(dir_fixtures, name)) as dbf:
+        with Dbf.open(dir_fixtures / name) as dbf:
             yield dbf
 
     return read_db_
@@ -46,7 +44,7 @@ def test_basic(read_db):
 
     for fname in fnames:
         with read_db(fname) as dbf:
-            for row in dbf:
+            for _row in dbf:
                 pass  # check no exception on iteration
 
 
@@ -54,7 +52,7 @@ def test_cast(read_db):
     with read_db('dbase_83.dbf') as dbf:
 
         assert len(dbf.fields) == 15
-        assert '%s' % dbf.fields[-1] == 'active'
+        assert f'{dbf.fields[-1]}' == 'active'
 
         for row in dbf:
             assert isinstance(row.id, int)
@@ -74,7 +72,7 @@ def test_cyrillic(read_db):
 
 def test_archive(dir_fixtures):
 
-    with Dbf.open_zip('bik_swif.dbf', path.join(dir_fixtures, 'bik_swift-bik.zip'), case_sensitive=False) as dbf:
+    with Dbf.open_zip('bik_swif.dbf', dir_fixtures / 'bik_swift-bik.zip', case_sensitive=False) as dbf:
 
         assert dbf.prolog.records_count == 369
 
@@ -85,8 +83,8 @@ def test_archive(dir_fixtures):
 
 def test_open_db(dir_fixtures):
 
-    with open_db('bik_swif.dbf', path.join(dir_fixtures, 'bik_swift-bik.zip'), case_sensitive=False) as dbf:
+    with open_db('bik_swif.dbf', dir_fixtures / 'bik_swift-bik.zip', case_sensitive=False) as dbf:
         assert dbf.prolog.records_count == 369
 
-    with open_db( path.join(dir_fixtures, 'bik_swif.dbf'), case_sensitive=False) as dbf:
+    with open_db( dir_fixtures / 'bik_swif.dbf', case_sensitive=False) as dbf:
         assert dbf.prolog.records_count == 369

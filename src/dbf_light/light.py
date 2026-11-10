@@ -1,19 +1,17 @@
-# -*- encoding: utf-8 -*-
-from __future__ import unicode_literals
 
 import struct
-from os import path, listdir
+from pathlib import Path
 from collections import namedtuple
 from contextlib import contextmanager
 from functools import partial
 from zipfile import ZipFile
 
 from .utils import string_types, pick_name
-from .definitions import get_format_description, Field
+from .definitions import get_format_description
 from .exceptions import DbfException
 
 
-class Dbf(object):
+class Dbf:
     """Represents data from .dbf file."""
 
     def __init__(self, fileobj, encoding=None, fieldnames_lower=True):
@@ -70,9 +68,9 @@ class Dbf(object):
         """
         if not case_sensitive:
             if isinstance(dbfile, string_types):
-                dbfile = pick_name(dbfile, listdir(path.dirname(dbfile)))
+                dbfile = pick_name(dbfile, Path(dbfile).parent.iterdir())
 
-        with open(dbfile, 'rb') as f:
+        with Path(dbfile).open('rb') as f:
             yield cls(f, encoding=encoding, fieldnames_lower=fieldnames_lower)
 
     @classmethod
@@ -117,7 +115,7 @@ class Dbf(object):
         cls_row = self.cls_row
         fields = self.fields
 
-        for idx in range(self.prolog.records_count):
+        for _ in range(self.prolog.records_count):
             data = fileobj.read(1)
 
             marker = struct.unpack('<1s', data)[0]
@@ -139,7 +137,7 @@ class Dbf(object):
 
         fields = []
         field_names = []
-        for idx in range(self.prolog.fields_count):
+        for _ in range(self.prolog.fields_count):
             field = field_from_file(fh)  # type: Field
             name = field.name
 
@@ -156,7 +154,7 @@ class Dbf(object):
         if terminator != b'\r':
             raise DbfException(
                 'Header termination byte not found. '
-                'Seems to be an unsupported format. Signature: %s' % self.signature)
+                f'Seems to be an unsupported format. Signature: {self.signature}')
 
         cls_row = namedtuple('Row', field_names)
 
@@ -180,11 +178,11 @@ def open_db(db, zipped=None, encoding=None, fieldnames_lower=True, case_sensitiv
 
     :rtype: Dbf
     """
-    kwargs = dict(
-        encoding=encoding,
-        fieldnames_lower=fieldnames_lower,
-        case_sensitive=case_sensitive,
-    )
+    kwargs = {
+        'encoding': encoding,
+        'fieldnames_lower': fieldnames_lower,
+        'case_sensitive': case_sensitive,
+    }
 
     if zipped:
         with Dbf.open_zip(db, zipped, **kwargs) as dbf:

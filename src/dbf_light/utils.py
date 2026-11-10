@@ -1,15 +1,7 @@
-# -*- encoding: utf-8 -*-
-from __future__ import unicode_literals
-from os import path
-
 import codecs
+from pathlib import Path
 
-
-try:
-    string_types = basestring,
-
-except NameError:
-    string_types = str,
+string_types = str,
 
 
 def bytes_to_int(val):
@@ -17,14 +9,14 @@ def bytes_to_int(val):
 
 
 def pick_name(filename, candidates):
-    filedir = path.dirname(filename)
-    name_lower = path.basename(filename).lower()
+    filedir = Path(filename).parent
+    name_lower = Path(filename).name.lower()
     name_candidate = None
 
     for name in candidates:
 
-        if name_lower == path.basename(name).lower():
-            name_candidate = path.join(filedir, name)
+        if name_lower == Path(name).name.lower():
+            name_candidate = str(filedir / name)
             break
 
     if name_candidate:

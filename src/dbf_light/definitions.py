@@ -1,5 +1,3 @@
-# -*- encoding: utf-8 -*-
-from __future__ import unicode_literals, division
 
 import struct
 
@@ -31,7 +29,7 @@ class Field(Definition):
 
     @classmethod
     def from_file(cls, fileobj, name_lower=True, encoding=None):
-        field = super(Field, cls).from_file(fileobj)
+        field = super().from_file(fileobj)
 
         if name_lower:
             field.set_name(field.data['name'].lower())
@@ -41,7 +39,7 @@ class Field(Definition):
         return field
 
     def __init__(self, data):
-        super(Field, self).__init__(data)
+        super().__init__(data)
         data = self.data
 
         data['name'] = data['name'].decode().rstrip('\0')
@@ -81,7 +79,7 @@ class Prolog(Definition):
     )
 
     def __init__(self, data):
-        super(Prolog, self).__init__(data)
+        super().__init__(data)
 
         data = self.data
 
@@ -118,12 +116,10 @@ class PrologFoxpro(Prolog):
 
     cls_field = FieldFoxpro
 
-    _definition = tuple(
-        list(Prolog._definition) +
-        [
-            ('language_driver', '32s'),
-            ('reserved4', '4s'),
-        ]
+    _definition = (
+        *Prolog._definition,
+        ('language_driver', '32s'),
+        ('reserved4', '4s'),
     )
 
 
