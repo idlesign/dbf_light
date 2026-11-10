@@ -1,3 +1,0 @@
-[run]
-source = dbf_light/
-omit = dbf_light/cli.py
