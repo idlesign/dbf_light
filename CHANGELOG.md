@@ -1,6 +1,6 @@
 # dbf_light changelog
 
-### Unreleased
+### v1.0.1 [2026-11-14]
 * ** Fixed stream desynchronization when reading DBF files with deleted rows (close #1).
 
 ### v1.0.0 [2020-02-18]
