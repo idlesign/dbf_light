@@ -1,5 +1,8 @@
 # dbf_light changelog
 
+### Unreleased
+* ** Fixed stream desynchronization when reading DBF files with deleted rows (close #1).
+
 ### v1.0.0 [2020-02-18]
 * !! Dropped QA for Python 2.
 * !! Dropped QA for Python 3.4.
