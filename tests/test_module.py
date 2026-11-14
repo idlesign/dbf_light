@@ -88,3 +88,26 @@ def test_open_db(dir_fixtures):
 
     with open_db( dir_fixtures / 'bik_swif.dbf', case_sensitive=False) as dbf:
         assert dbf.prolog.records_count == 369
+
+
+def test_deleted_rows(dir_fixtures, tmp_path):
+    # A copy of the fixture with the second record marked as deleted.
+    src = dir_fixtures / "dbase_03.dbf"
+    data = bytearray(src.read_bytes())
+
+    header_len = int.from_bytes(data[8:10], "little")
+    record_len = int.from_bytes(data[10:12], "little")
+
+    data[header_len + record_len] = ord("*")  # Marker of the second record.
+
+    modified = tmp_path / "modified.dbf"
+    modified.write_bytes(data)
+
+    with Dbf.open(src) as dbf:
+        rows_expected = [tuple(row) for row in dbf]
+
+    with Dbf.open(modified) as dbf:
+        rows_actual = [tuple(row) for row in dbf]
+
+    # The second record is skipped, and the following records stay in sync.
+    assert rows_actual == rows_expected[:1] + rows_expected[2:]

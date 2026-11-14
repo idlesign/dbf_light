@@ -122,6 +122,8 @@ class Dbf:
             is_deleted = marker == b'*'
 
             if is_deleted:
+                # Skip the record bytes to keep the stream in sync.
+                fileobj.read(sum(field.len for field in fields))
                 continue
 
             row_values = []
